@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PANTHERR | Status</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dim: rgba(124,58,237,0.15);
+      --purple-border: rgba(124,58,237,0.3);
+      --bg: #030305;
+      --surface: rgba(255,255,255,0.035);
+      --surface-hover: rgba(255,255,255,0.06);
+      --text: #f1f0ff;
+      --muted: #7c7a9a;
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #facc15;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .page { max-width: 720px; margin: 0 auto; }
+
+    /* Header */
+    header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
+    .logo {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple), #9d50bb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    header h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.05em; }
+    header h1 span { color: var(--purple-light); }
+    .subtitle { font-size: 0.78rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+    .refresh-btn {
+      margin-left: auto; padding: 0.45rem 1rem; border-radius: 8px;
+      background: var(--purple-dim); border: 1px solid var(--purple-border);
+      color: var(--purple-light); font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(124,58,237,0.28); }
+
+    /* Status badge */
+    .status-banner {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1.25rem; border-radius: 14px;
+      border: 1px solid var(--purple-border);
+      background: var(--surface);
+      margin-bottom: 1.5rem;
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+    .dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); animation: none; }
+    .dot.loading { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .status-label { font-weight: 700; font-size: 1rem; }
+    .status-ts { margin-left: auto; font-size: 0.75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+    /* Grid */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--purple-border);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+    }
+    .card-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .card-value {
+      font-size: 1.6rem; font-weight: 800; color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .card-value.sm { font-size: 1.1rem; }
+    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* Tag */
+    .tag {
+      display: inline-block; padding: 0.2rem 0.65rem;
+      border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+    .tag-purple { background: var(--purple-dim); color: var(--purple-light); border: 1px solid var(--purple-border); }
+    .tag-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+    /* Memory bar */
+    .bar-wrap { background: rgba(255,255,255,0.07); border-radius: 6px; height: 6px; margin-top: 0.6rem; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--purple), var(--purple-light)); transition: width 0.5s; }
+
+    /* Full-width card */
+    .card-full { grid-column: 1 / -1; }
+
+    /* Error state */
+    .error-box {
+      background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 14px; padding: 1.25rem 1.4rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--red);
+    }
+
+    footer { text-align: center; margin-top: 2rem; font-size: 0.72rem; color: var(--muted); }
+    footer a { color: var(--purple-light); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo">⚡</div>
+    <div>
+      <h1>BLACK<span>PANTHER</span></h1>
+      <div class="subtitle">SYSTEM_STATUS · WAKANDA_PROTOCOL</div>
+    </div>
+    <button class="refresh-btn" onclick="load()">↻ Refresh</button>
+  </header>
+
+  <div id="banner" class="status-banner">
+    <div class="dot loading" id="dot"></div>
+    <span class="status-label" id="status-label">Connecting...</span>
+    <span class="status-ts" id="status-ts"></span>
+  </div>
+
+  <div id="content"></div>
+  <footer>PANTHERR Session · <a href="/">Home</a> · <a href="/pair">Pair</a> · <a href="/qr">QR</a></footer>
+</div>
+
+<script>
+async function load() {
+  const dot = document.getElementById('dot');
+  const label = document.getElementById('status-label');
+  const ts = document.getElementById('status-ts');
+  const content = document.getElementById('content');
+
+  dot.className = 'dot loading';
+  label.textContent = 'Fetching...';
+
+  try {
+    const res = await fetch('/health');
+    const d = await res.json();
+
+    dot.className = d.success ? 'dot' : 'dot error';
+    label.textContent = d.success ? 'ALL SYSTEMS OPERATIONAL' : 'DEGRADED';
+    ts.textContent = new Date(d.timestamp).toLocaleTimeString();
+
+    const memPct = d.system?.memory
+      ? Math.round((d.system.memory.used_mb / d.system.memory.total_mb) * 100)
+      : 0;
+
+    const storageConfigured = d.storage?.configured;
+    const storageType = (d.storage?.type || 'unknown').toUpperCase();
+
+    content.innerHTML = `
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">Service</div>
+          <div class="card-value sm">${d.service || 'PANTHERR'}</div>
+          <div class="card-sub">
+            <span class="tag tag-purple">${(d.environment || 'local').toUpperCase()}</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Storage</div>
+          <div class="card-value sm">${storageType}</div>
+          <div class="card-sub" style="margin-top:0.4rem">
+            <span class="tag ${storageConfigured ? 'tag-green' : 'tag-red'}">
+              ${storageConfigured ? 'CONNECTED' : 'NOT CONFIGURED'}
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Active Sessions</div>
+          <div class="card-value">${d.sessions?.active ?? 0}</div>
+          <div class="card-sub">pairing in progress</div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Uptime</div>
+          <div class="card-value sm">${d.system?.uptime || '—'}</div>
+          <div class="card-sub">Node ${d.system?.node || ''}</div>
+        </div>
+
+        <div class="card card-full">
+          <div class="card-label">Memory Usage</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div class="card-value sm">${d.system?.memory?.used_mb ?? '—'} MB used</div>
+            <div class="card-sub">${d.system?.memory?.rss_mb ?? '—'} MB RSS · ${d.system?.memory?.total_mb ?? '—'} MB heap</div>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${memPct}%"></div></div>
+          <div class="card-sub" style="margin-top:0.4rem">${memPct}% heap used</div>
+        </div>
+      </div>`;
+  } catch (e) {
+    dot.className = 'dot error';
+    label.textContent = 'UNREACHABLE';
+    ts.textContent = new Date().toLocaleTimeString();
+    content.innerHTML = '<div class="error-box">Failed to reach /health — ' + e.message + '</div>';
+  }
+}
+
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
