@@ -1,23 +1,54 @@
-const { gifted } = require('gifted-btns');
+const { generateWAMessageFromContent, proto } = require('@whiskeysockets/baileys');
 
 async function sendButtons(sock, jid, opts = {}) {
     const { text = '', footer = '', buttons = [] } = opts;
 
     try {
-        const msg = gifted(jid, {
-            text,
-            footer,
-            buttons: buttons.map((btn, i) => {
-                const params = btn.buttonParamsJson ? JSON.parse(btn.buttonParamsJson) : {};
-                if (btn.name === 'cta_copy') {
-                    return { type: 'cta_copy', copy_code: params.copy_code || '', display_text: params.display_text || 'Copy' };
-                }
-                if (btn.name === 'cta_url') {
-                    return { type: 'cta_url', url: params.url || '', display_text: params.display_text || 'Open' };
-                }
-                return { type: 'reply', id: String(i + 1), display_text: params.display_text || btn.name || 'Button' };
-            })
+        const nativeButtons = buttons.map((btn) => {
+            const params = btn.buttonParamsJson ? JSON.parse(btn.buttonParamsJson) : {};
+            if (btn.name === 'cta_copy') {
+                return {
+                    name: 'cta_copy',
+                    buttonParamsJson: JSON.stringify({
+                        display_text: params.display_text || 'Copy',
+                        copy_code: params.copy_code || ''
+                    })
+                };
+            }
+            if (btn.name === 'cta_url') {
+                return {
+                    name: 'cta_url',
+                    buttonParamsJson: JSON.stringify({
+                        display_text: params.display_text || 'Open',
+                        url: params.url || '',
+                        merchant_url: params.url || ''
+                    })
+                };
+            }
+            return {
+                name: 'quick_reply',
+                buttonParamsJson: JSON.stringify({
+                    display_text: params.display_text || btn.name || 'Button',
+                    id: String(buttons.indexOf(btn) + 1)
+                })
+            };
         });
+
+        const msg = generateWAMessageFromContent(jid, {
+            viewOnceMessage: {
+                message: {
+                    interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+                        body: proto.Message.InteractiveMessage.Body.fromObject({ text }),
+                        footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: footer }),
+                        header: proto.Message.InteractiveMessage.Header.fromObject({ hasMediaAttachment: false }),
+                        nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
+                            buttons: nativeButtons
+                        })
+                    })
+                }
+            }
+        }, { userJid: sock.user.id });
+
         await sock.relayMessage(jid, msg.message, { messageId: msg.key.id });
     } catch (btnErr) {
         try {
