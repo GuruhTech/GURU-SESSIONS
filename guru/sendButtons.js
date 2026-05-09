@@ -1,10 +1,10 @@
-const { generateWAMessageFromContent, proto } = require('@whiskeysockets/baileys');
-
 async function sendButtons(sock, jid, opts = {}) {
     const { text = '', footer = '', buttons = [] } = opts;
 
     try {
-        const nativeButtons = buttons.map((btn) => {
+        const { generateWAMessageFromContent, proto } = await import('@whiskeysockets/baileys');
+
+        const nativeButtons = buttons.map((btn, i) => {
             const params = btn.buttonParamsJson ? JSON.parse(btn.buttonParamsJson) : {};
             if (btn.name === 'cta_copy') {
                 return {
@@ -29,7 +29,7 @@ async function sendButtons(sock, jid, opts = {}) {
                 name: 'quick_reply',
                 buttonParamsJson: JSON.stringify({
                     display_text: params.display_text || btn.name || 'Button',
-                    id: String(buttons.indexOf(btn) + 1)
+                    id: String(i + 1)
                 })
             };
         });
