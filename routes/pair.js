@@ -14,7 +14,7 @@ const {
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore,
     Browsers
-} = require('@whiskeysockets/baileys');
+} = await import('@whiskeysockets/baileys');
 
 let router = express.Router();
 
