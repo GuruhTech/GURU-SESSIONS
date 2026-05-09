@@ -49,6 +49,12 @@ try {
         });
     });
 
+    app.get('/status', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public', 'status.html'), { dotfiles: 'allow' }, (err) => {
+            if (err) res.status(500).send('Error serving page: ' + err.message);
+        });
+    });
+
     app.use('/qr', qrRoute);
     app.use('/code', pairRoute);
 
@@ -86,7 +92,7 @@ try {
             status: 200,
             success: true,
             service: 'PANTHERR Session',
-            version: require('./package.json').version || '1.0.0',
+            version: '1.0.0',
             environment: process.env.VERCEL ? 'vercel' : (process.env.NODE_ENV || 'local'),
             storage: {
                 type: storageType,
