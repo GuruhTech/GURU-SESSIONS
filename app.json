@@ -1,0 +1,9 @@
+{
+    "name": "PANTHERR Session Generator",
+    "description": "WhatsApp Session Generator",
+    "repository": "https://github.com/GuruhTech/ULTRA-GURU",
+    "keywords": ["Guru-Tech"],
+    "env": {
+        "DATABASE_URL": { "description": "MongoDB or PostgreSQL URL for session storage", "required": false }
+    }
+}

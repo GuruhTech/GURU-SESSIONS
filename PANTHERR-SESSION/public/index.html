@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>BLACK PANTHER MD • Wakanda Forever</title>
+  <meta name="theme-color" content="#7c3aed">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #030305;
+      --accent-primary: #7c3aed;   /* Vibranium Purple */
+      --accent-secondary: #a78bfa; /* Soft Panther Violet */
+      --accent-gold: #c084fc;      /* Wakanda Glow */
+      --glass: rgba(124, 58, 237, 0.04);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-dark);
+      color: #eaeaea;
+      overflow-x: hidden;
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Wakanda ambient glow background */
+    .bg-glow {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 0% 100%, rgba(91,33,182,0.1) 0%, transparent 45%),
+        radial-gradient(ellipse at 100% 50%, rgba(167,139,250,0.06) 0%, transparent 40%);
+      z-index: -1;
+    }
+
+    .nav-blur {
+      background: rgba(3, 3, 5, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+    }
+
+    .hero-title {
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
+      background: linear-gradient(to bottom right, #fff 30%, rgba(255,255,255,0.35));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .glow-text {
+      background: linear-gradient(135deg, #a78bfa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Wakanda tech-cut button */
+    .btn-wakanda {
+      position: relative;
+      padding: 16px 36px;
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+      font-weight: 700;
+      clip-path: polygon(8% 0, 100% 0, 100% 70%, 92% 100%, 0 100%, 0 30%);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .btn-wakanda:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(124, 58, 237, 0.5);
+      filter: brightness(1.15);
+    }
+
+    .glass-card {
+      background: var(--glass);
+      border: 1px solid rgba(124, 58, 237, 0.12);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      background: rgba(124, 58, 237, 0.07);
+      border-color: rgba(124, 58, 237, 0.35);
+      transform: translateY(-5px);
+    }
+
+    /* Vibranium scan effect on terminal card */
+    .scanline {
+      width: 100%;
+      height: 2px;
+      background: rgba(124, 58, 237, 0.15);
+      position: absolute;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(124,58,237,0); }
+    }
+
+    .logo-icon { animation: pulse-ring 3s ease-in-out infinite; }
+
+    .input-cyber {
+      background: rgba(124, 58, 237, 0.04);
+      border: 1px solid rgba(124, 58, 237, 0.15);
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    .input-cyber:focus {
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 15px rgba(167, 139, 250, 0.15);
+      outline: none;
+    }
+
+    .stat-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(124,58,237,0.25), transparent);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <nav class="nav-blur fixed top-0 w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl logo-icon flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C10.5 2 9 3 9 4.5C9 6 10.5 7 12 7C13.5 7 15 6 15 4.5C15 3 13.5 2 12 2Z"/>
+            <path d="M8 5C6.5 5 5.5 6 5.5 7.5C5.5 9 6.5 10 8 10C9.5 10 10.5 9 10.5 7.5C10.5 6 9.5 5 8 5Z"/>
+            <path d="M16 5C14.5 5 13.5 6 13.5 7.5C13.5 9 14.5 10 16 10C17.5 10 18.5 9 18.5 7.5C18.5 6 17.5 5 16 5Z"/>
+            <path d="M5 9C3.5 9 2.5 10.5 3 12.5L5.5 20C6 21.5 7 22 8 22C9 22 10 21 10.5 19.5L12 15L13.5 19.5C14 21 15 22 16 22C17 22 18 21.5 18.5 20L21 12.5C21.5 10.5 20.5 9 19 9C18 9 17 9.5 16.5 10.5L15 14L13 9.5C12.5 8.5 12 8 12 8C12 8 11.5 8.5 11 9.5L9 14L7.5 10.5C7 9.5 6 9 5 9Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-tighter">BLACK<span class="glow-text">PANTHER</span></span>
+          <span class="mono text-[9px] block leading-none" style="color:rgba(167,139,250,0.5);">MD • WAKANDA FOREVER</span>
+        </div>
+      </div>
+
+      <div class="hidden md:flex gap-10 text-xs font-semibold uppercase tracking-widest" style="color:rgba(167,139,250,0.5);">
+        <a href="#" class="hover:text-purple-300 transition-colors">Interface</a>
+        <a href="#" class="hover:text-purple-300 transition-colors">Network</a>
+        <a href="#" class="hover:text-purple-300 transition-colors">Nodes</a>
+      </div>
+
+      <a href="/pair" class="mono text-xs px-4 py-2 transition-all hover:bg-purple-900/40" style="border:1px solid rgba(124,58,237,0.3);color:rgba(167,139,250,0.8);">
+        WAKANDA_CONNECT
+      </a>
+    </div>
+  </nav>
+
+  <main class="relative pt-40 pb-20 px-6">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="inline-block mono text-[10px] px-3 py-1 mb-8" style="background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.2);">
+          ✊🏿 STABLE_BUILD_V3.0.0 • MADE_IN_KENYA 🇰🇪
+        </div>
+        <h1 class="hero-title text-8xl md:text-9xl mb-8">
+          PURE<br>POWER.
+        </h1>
+        <p class="text-lg max-w-md leading-relaxed mb-10" style="color:rgba(167,139,250,0.5);">
+          The most powerful WhatsApp MD bot on the continent. 200+ commands. Secure. Ephemeral. Built from Wakanda with precision.
+        </p>
+
+        <div class="flex flex-wrap gap-6">
+          <a href="/pair" class="btn-wakanda">GENERATE_PAIR</a>
+          <a href="/qr" class="flex items-center gap-3 px-8 py-4 transition-all group" style="border:1px solid rgba(124,58,237,0.2);" onmouseover="this.style.borderColor='rgba(167,139,250,0.5)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.2)'">
+            <i class="fas fa-qrcode" style="color:#a78bfa;"></i>
+            <span class="mono text-sm" style="color:rgba(167,139,250,0.7);">QR_SCAN</span>
+          </a>
+        </div>
+
+        <div class="mt-12 flex gap-8">
+          <div>
+            <p class="text-3xl font-extrabold text-white">200<span class="glow-text">+</span></p>
+            <p class="mono text-[10px] uppercase tracking-widest" style="color:rgba(167,139,250,0.4);">Commands</p>
+          </div>
+          <div class="w-px" style="background:rgba(124,58,237,0.2);"></div>
+          <div>
+            <p class="text-3xl font-extrabold text-white">AES<span class="glow-text">-256</span></p>
+            <p class="mono text-[10px] uppercase tracking-widest" style="color:rgba(167,139,250,0.4);">Encryption</p>
+          </div>
+          <div class="w-px" style="background:rgba(124,58,237,0.2);"></div>
+          <div>
+            <p class="text-3xl font-extrabold text-white">Multi<span class="glow-text">-Dev</span></p>
+            <p class="mono text-[10px] uppercase tracking-widest" style="color:rgba(167,139,250,0.4);">Platform</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative hidden lg:block">
+        <div class="glass-card p-12 rounded-sm relative overflow-hidden" style="border-color:rgba(124,58,237,0.2);">
+          <div class="scanline"></div>
+          <pre class="mono text-[10px] leading-tight" style="color:rgba(167,139,250,0.5);">
+> INITIALIZING BLACK_PANTHER_CORE...
+> LOADING VIBRANIUM_MODULES...
+> ESTABLISHING SOCKET.IO...
+> STATUS: ENCRYPTED ✓
+> HANDSHAKE: SUCCESS ✓
+> WAKANDA_PROTOCOL: ACTIVE...
+> AWAITING_INPUT_IDENTITY...
+> BOT_VERSION: 3.0.0-PANTHER
+          </pre>
+          <div class="mt-8 space-y-4">
+            <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.05);">
+              <div class="h-1 w-2/3 rounded-full" style="background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div>
+            </div>
+            <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.05);">
+              <div class="h-1 w-1/2 rounded-full" style="background:rgba(167,139,250,0.5);"></div>
+            </div>
+            <div class="h-1 w-full rounded-full" style="background:rgba(255,255,255,0.05);">
+              <div class="h-1 w-4/5 rounded-full" style="background:rgba(192,132,252,0.4);"></div>
+            </div>
+          </div>
+          <!-- Vibranium corner accent -->
+          <div class="absolute bottom-4 right-4 mono text-[8px]" style="color:rgba(124,58,237,0.3);">
+            ╭═❖ WAKANDA ❖═╮
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Feature cards -->
+  <section class="py-24 px-6" style="border-top:1px solid rgba(124,58,237,0.08);border-bottom:1px solid rgba(124,58,237,0.08);">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-3 gap-1">
+        <div class="glass-card p-10">
+          <span class="mono text-sm" style="color:#a78bfa;">01.</span>
+          <h3 class="text-2xl font-bold mt-4 mb-4 text-white">Vibranium Pairing</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(167,139,250,0.45);">Direct 8-digit authorization bypasses physical hardware requirements with zero latency. Powered by the strongest metal on Earth.</p>
+        </div>
+        <div class="glass-card p-10" style="border-left:none;border-right:none;">
+          <span class="mono text-sm" style="color:#c084fc;">02.</span>
+          <h3 class="text-2xl font-bold mt-4 mb-4 text-white">Visual Sync</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(167,139,250,0.45);">Instant QR matrix generation for legacy device authentication via secure optical scan. Wakanda-grade precision.</p>
+        </div>
+        <div class="glass-card p-10">
+          <span class="mono text-sm" style="color:rgba(255,255,255,0.6);">03.</span>
+          <h3 class="text-2xl font-bold mt-4 mb-4 text-white">Panther Security</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(167,139,250,0.45);">End-to-end volatile memory processing. Your credentials never touch a disk. Black Panther's promise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-12 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="text-center md:text-left">
+        <p class="mono text-[10px] uppercase tracking-widest" style="color:rgba(124,58,237,0.4);">
+          ✊🏿 WAKANDA FOREVER // BLACK_PANTHER_MD // MADE_WITH_❤️_IN_KENYA 🇰🇪
+        </p>
+        <p class="mono text-[9px] mt-1" style="color:rgba(124,58,237,0.25);">
+          ╭═❖ BLACK PANTHER MD ❖═╮ by GuruTech ╭═❖ ALL_RIGHTS_RESERVED ❖═╮
+        </p>
+      </div>
+      <div class="flex gap-8">
+        <a href="https://github.com/koyoteh/BLACK-PANTHER" class="transition-colors text-white" style="color:rgba(167,139,250,0.5);" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(167,139,250,0.5)'"><i class="fab fa-github"></i></a>
+        <a href="https://wa.me/254105521300" class="transition-colors" style="color:rgba(167,139,250,0.5);" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(167,139,250,0.5)'"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://whatsapp.com/channel/0029VbCl2UX3rZZilMSvxN1e" class="transition-colors" style="color:rgba(167,139,250,0.5);" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(167,139,250,0.5)'"><i class="fas fa-broadcast-tower"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Note: Built for the BLACK PANTHER MD Project by GuruTech. Wakanda Forever ✊🏿
+  </script>
+</body>
+</html>

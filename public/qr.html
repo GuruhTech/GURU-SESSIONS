@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>BLACK PANTHER MD | QR Code Login</title>
+  <meta name="description" content="Link your account to BLACK PANTHER MD by scanning a QR code. Secure. Instant. Wakanda-grade.">
+  <meta name="theme-color" content="#7c3aed">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --brand-primary: #7c3aed;
+      --brand-accent: #a78bfa;
+      --brand-glow: rgba(124, 58, 237, 0.5);
+      --brand-glow-soft: rgba(167, 139, 250, 0.12);
+      --bg-dark: #030305;
+      --card-bg: #0a0a0f;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-dark);
+      color: #f0e8ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glow-text {
+      background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(90px); pointer-events: none; z-index: 0; will-change: transform;
+    }
+    @keyframes blobFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(20px,-20px) scale(1.05); }
+    }
+
+    .nav-glass {
+      background: rgba(3, 3, 5, 0.9);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav-link { color: rgba(167,139,250,0.5); transition: color 0.2s; }
+    .nav-link:hover { color: #a78bfa; }
+    .nav-link.active { color: #a78bfa; }
+
+    #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); background: #07070f; }
+    .sidebar-link { transition: all 0.2s; border-radius: 8px; }
+    .sidebar-link:hover { background: rgba(124, 58, 237, 0.1); color: #a78bfa; transform: translateX(4px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px var(--brand-glow);
+      filter: brightness(1.1);
+    }
+
+    .btn-ghost {
+      background: rgba(124, 58, 237, 0.06);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      color: #f0e8ff;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      background: rgba(124, 58, 237, 0.12);
+    }
+
+    .social-icon { transition: all 0.2s; border-radius: 8px; }
+    .social-icon:hover { background: rgba(124, 58, 237, 0.15); color: #a78bfa; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--brand-primary), var(--brand-accent), transparent);
+    }
+
+    [data-anim].in-view { opacity: 1; transform: translateY(0) scale(1); }
+    [data-anim] { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(124,58,237,0); }
+    }
+
+    .type-btn-active {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+      color: #fff !important;
+    }
+    .type-btn-inactive {
+      background: transparent !important;
+      color: rgba(167,139,250,0.45) !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Vibranium ambient blobs -->
+  <div class="blob w-96 h-96 top-[-80px] left-[-80px]" style="background:rgba(124,58,237,0.08);animation:blobFloat 14s ease-in-out infinite;"></div>
+  <div class="blob w-64 h-64 bottom-[-40px] right-[-40px]" style="background:rgba(167,139,250,0.06);animation:blobFloat 18s ease-in-out infinite reverse;"></div>
+
+  <nav class="nav-glass sticky top-0 z-50" style="position:relative;z-index:50;">
+    <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 no-underline">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);animation:pulse-ring 3s ease-in-out infinite;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C10.5 2 9 3 9 4.5C9 6 10.5 7 12 7C13.5 7 15 6 15 4.5C15 3 13.5 2 12 2Z"/>
+            <path d="M8 5C6.5 5 5.5 6 5.5 7.5C5.5 9 6.5 10 8 10C9.5 10 10.5 9 10.5 7.5C10.5 6 9.5 5 8 5Z"/>
+            <path d="M16 5C14.5 5 13.5 6 13.5 7.5C13.5 9 14.5 10 16 10C17.5 10 18.5 9 18.5 7.5C18.5 6 17.5 5 16 5Z"/>
+            <path d="M5 9C3.5 9 2.5 10.5 3 12.5L5.5 20C6 21.5 7 22 8 22C9 22 10 21 10.5 19.5L12 15L13.5 19.5C14 21 15 22 16 22C17 22 18 21.5 18.5 20L21 12.5C21.5 10.5 20.5 9 19 9C18 9 17 9.5 16.5 10.5L15 14L13 9.5C12.5 8.5 12 8 12 8C12 8 11.5 8.5 11 9.5L9 14L7.5 10.5C7 9.5 6 9 5 9Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-lg font-bold tracking-tight text-white">BLACK <span class="glow-text">PANTHER</span></span>
+          <span class="font-mono text-[9px] block leading-none" style="color:rgba(167,139,250,0.4);">WAKANDA FOREVER ✊🏿</span>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-7">
+        <a href="https://github.com/koyoteh/BLACK-PANTHER" class="nav-link text-sm font-medium">Source Code</a>
+        <a href="/pair" class="nav-link text-sm font-medium">Pair Code</a>
+        <a href="/qr" class="nav-link active text-sm font-medium">QR Code</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="menuBtn" class="md:hidden" style="color:rgba(167,139,250,0.6);"><i class="fas fa-bars text-xl"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative z-10" style="position:relative;z-index:1;">
+    <section class="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-5 py-12">
+      <div class="w-full max-w-md">
+
+        <div class="text-center mb-8" data-anim="fade-up">
+          <div class="inline-flex items-center gap-2 font-mono text-[10px] px-3 py-1.5 mb-5 rounded-full" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);color:#a78bfa;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#7c3aed;box-shadow:0 0 6px #7c3aed;"></span>
+            VIBRANIUM_PROTOCOL &bull; ACTIVE
+          </div>
+          <h1 class="text-3xl font-extrabold mb-2 text-white">QR Node</h1>
+          <p class="text-sm uppercase tracking-widest font-mono" style="color:rgba(167,139,250,0.4);">Handshake Protocol</p>
+        </div>
+
+        <div class="card p-8 shadow-2xl" data-anim="zoom-in">
+          <div class="mb-6">
+            <label class="block text-[10px] font-black uppercase tracking-widest mb-3" style="color:#a78bfa;">Session Type</label>
+            <div class="flex rounded-xl overflow-hidden p-1" style="background:rgba(0,0,0,0.4);border:1px solid rgba(124,58,237,0.2);">
+              <button type="button" id="typeShort" onclick="selectType('short')"
+                class="flex-1 py-2 text-xs font-bold rounded-lg transition-all type-btn-active">
+                SHORT
+              </button>
+              <button type="button" id="typeLong" onclick="selectType('long')"
+                class="flex-1 py-2 text-xs font-bold rounded-lg transition-all type-btn-inactive">
+                LONG
+              </button>
+            </div>
+          </div>
+
+          <button id="generateBtn" onclick="startQR()" class="btn-primary w-full py-4 flex items-center justify-center gap-3 group">
+            <i class="fas fa-qrcode"></i>
+            <span>GENERATE QR CODE</span>
+          </button>
+
+          <div class="mt-8 pt-6" style="border-top:1px solid rgba(124,58,237,0.1);">
+            <div class="rounded-xl p-4" style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);">
+              <p class="text-[10px] font-black uppercase mb-3 tracking-widest" style="color:#a78bfa;">
+                <i class="fas fa-paw mr-1"></i> Instructions
+              </p>
+              <ul class="text-xs space-y-2" style="color:rgba(167,139,250,0.5);">
+                <li class="flex gap-2"><span style="color:#7c3aed;">1.</span> <span>Open WhatsApp on your phone</span></li>
+                <li class="flex gap-2"><span style="color:#7c3aed;">2.</span> <span>Tap Menu or Settings &rarr; Linked Devices</span></li>
+                <li class="flex gap-2"><span style="color:#7c3aed;">3.</span> <span>Point your camera at the generated QR</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-3 gap-3">
+          <div class="rounded-xl p-3 text-center" style="background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.12);">
+            <i class="fas fa-shield-alt text-xs mb-1 block" style="color:#a78bfa;"></i>
+            <p class="text-[10px] uppercase tracking-wider font-mono" style="color:rgba(167,139,250,0.4);">Secure</p>
+          </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.12);">
+            <i class="fas fa-bolt text-xs mb-1 block" style="color:#a78bfa;"></i>
+            <p class="text-[10px] uppercase tracking-wider font-mono" style="color:rgba(167,139,250,0.4);">Instant</p>
+          </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.12);">
+            <i class="fas fa-fingerprint text-xs mb-1 block" style="color:#a78bfa;"></i>
+            <p class="text-[10px] uppercase tracking-wider font-mono" style="color:rgba(167,139,250,0.4);">Verified</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-8 text-center" style="border-top:1px solid rgba(124,58,237,0.1);background:#050508;">
+    <p class="text-[10px] uppercase tracking-widest font-mono" style="color:rgba(124,58,237,0.35);">
+      ✊🏿 BLACK PANTHER MD &bull; Wakanda Forever &bull; Built by GuruTech 🇰🇪
+    </p>
+  </footer>
+
+  <script>
+    /* Note: Built for the BLACK PANTHER MD Project by GuruTech. Wakanda Forever ✊🏿 */
+    let selectedType = 'short';
+
+    function selectType(type) {
+      selectedType = type;
+      const sBtn = document.getElementById('typeShort');
+      const lBtn = document.getElementById('typeLong');
+      if (type === 'short') {
+        sBtn.className = sBtn.className.replace('type-btn-inactive','') + ' type-btn-active';
+        lBtn.className = lBtn.className.replace('type-btn-active','') + ' type-btn-inactive';
+        sBtn.style.background = 'linear-gradient(135deg,#7c3aed,#5b21b6)';
+        sBtn.style.color = '#fff';
+        lBtn.style.background = 'transparent';
+        lBtn.style.color = 'rgba(167,139,250,0.45)';
+      } else {
+        lBtn.style.background = 'linear-gradient(135deg,#7c3aed,#5b21b6)';
+        lBtn.style.color = '#fff';
+        sBtn.style.background = 'transparent';
+        sBtn.style.color = 'rgba(167,139,250,0.45)';
+      }
+    }
+
+    function startQR() {
+      window.location.href = `/qr/session?type=${selectedType}`;
+    }
+
+    // Simple reveal animation
+    document.querySelectorAll('[data-anim]').forEach(el => {
+      el.classList.add('in-view');
+    });
+  </script>
+</body>
+</html>
