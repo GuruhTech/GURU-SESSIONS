@@ -16,6 +16,21 @@ try {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.static(path.join(__dirname, 'public')));
 
+    // Track active pairing sessions
+    let activeSessions = 0;
+    app.use('/code', (req, res, next) => {
+        activeSessions++;
+        res.on('finish', () => { activeSessions = Math.max(0, activeSessions - 1); });
+        next();
+    });
+    app.use('/qr', (req, res, next) => {
+        if (req.path === '/session') {
+            activeSessions++;
+            res.on('finish', () => { activeSessions = Math.max(0, activeSessions - 1); });
+        }
+        next();
+    });
+
     app.get('/pair', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', 'pair.html'), { dotfiles: 'allow' }, (err) => {
             if (err) res.status(500).send('Error serving page: ' + err.message);
@@ -52,18 +67,50 @@ try {
     });
 
     app.get('/health', (req, res) => {
+        const mem = process.memoryUsage();
+        const uptimeSec = Math.floor(process.uptime());
+        const hh = Math.floor(uptimeSec / 3600);
+        const mm = Math.floor((uptimeSec % 3600) / 60);
+        const ss = uptimeSec % 60;
+        const uptime = hh + 'h ' + mm + 'm ' + ss + 's';
+
+        let storageType = 'inline-zlib';
+        if (isConfigured()) {
+            const dbUrl = process.env.DATABASE_URL || '';
+            if (dbUrl.startsWith('mongodb')) storageType = 'mongodb';
+            else if (dbUrl.startsWith('postgres')) storageType = 'postgresql';
+            else storageType = 'database';
+        }
+
         res.json({
             status: 200,
             success: true,
             service: 'PANTHERR Session',
-            storage: isConfigured() ? 'database' : 'inline-zlib',
-            timestamp: new Date().toISOString(),
+            version: require('./package.json').version || '1.0.0',
+            environment: process.env.VERCEL ? 'vercel' : (process.env.NODE_ENV || 'local'),
+            storage: {
+                type: storageType,
+                configured: isConfigured()
+            },
+            sessions: {
+                active: activeSessions
+            },
+            system: {
+                uptime,
+                node: process.version,
+                memory: {
+                    used_mb: Math.round(mem.heapUsed / 1024 / 1024),
+                    total_mb: Math.round(mem.heapTotal / 1024 / 1024),
+                    rss_mb: Math.round(mem.rss / 1024 / 1024)
+                }
+            },
+            timestamp: new Date().toISOString()
         });
     });
 
     if (require.main === module) {
         app.listen(PORT, () => {
-            console.log(`\nPANTHERR Session Server running on http://localhost:${PORT}`);
+            console.log('\nPANTHERR Session Server running on http://localhost:' + PORT);
             init(config);
         });
     } else {
@@ -74,7 +121,6 @@ try {
 
 } catch (startupError) {
     console.error('STARTUP CRASH:', startupError);
-    // Export a fallback express app that reports the error
     const express = require('express');
     const app = express();
     app.use((req, res) => {
