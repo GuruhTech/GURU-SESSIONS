@@ -7,18 +7,9 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const pino = require('pino');
-const {
-    default: guruConnect,
-    useMultiFileAuthState,
-    delay,
-    fetchLatestBaileysVersion,
-    makeCacheableSignalKeyStore,
-    Browsers
-} = await import('@whiskeysockets/baileys');
 
 let router = express.Router();
 
-// /tmp is the ONLY writable directory on Vercel
 const SESSION_BASE = process.env.VERCEL ? '/tmp/sessions' : path.join(__dirname, 'session');
 
 router.get('/', async (req, res) => {
@@ -49,6 +40,15 @@ router.get('/', async (req, res) => {
     const cleanupTimeout = setTimeout(() => cleanup(), 280000);
 
     async function GURU_PAIR_CODE() {
+        const {
+            default: guruConnect,
+            useMultiFileAuthState,
+            delay,
+            fetchLatestBaileysVersion,
+            makeCacheableSignalKeyStore,
+            Browsers
+        } = await import('@whiskeysockets/baileys');
+
         const { version } = await fetchLatestBaileysVersion();
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
         const logger = pino({ level: 'fatal' }).child({ level: 'fatal' });
@@ -73,7 +73,7 @@ router.get('/', async (req, res) => {
                 keepAliveIntervalMs: 25000,
             });
         } catch (err) {
-            console.error(`[pair:${id}] connect failed:`, err.message);
+            console.error('[pair:' + id + '] connect failed:', err.message);
             if (!responseSent && !res.headersSent) {
                 res.status(500).json({ code: 'Service Unavailable' });
                 responseSent = true;
@@ -91,8 +91,6 @@ router.get('/', async (req, res) => {
 
             if (connection === 'open') {
                 pairingDone = true;
-                console.log(`[pair:${id}] Connection open — reading session`);
-
                 try {
                     try { await Guru.groupAcceptInvite(GC_JID); } catch (_) {}
 
@@ -109,7 +107,6 @@ router.get('/', async (req, res) => {
                     }
 
                     if (!sessionData) {
-                        console.error(`[pair:${id}] Could not read creds.json`);
                         clearTimeout(cleanupTimeout);
                         await cleanup();
                         return;
@@ -123,15 +120,15 @@ router.get('/', async (req, res) => {
 
                     if (isConfigured() && sessionType === 'short') {
                         const shortId = await saveSession(fullSession);
-                        const shortSession = `${SESSION_PREFIX}${shortId}`;
-                        msgText = `*SESSION ID ✅*\n\n${shortSession}`;
+                        const shortSession = SESSION_PREFIX + shortId;
+                        msgText = '*SESSION ID \u2705*\n\n' + shortSession;
                         msgButtons = [
                             { name: 'cta_copy', buttonParamsJson: JSON.stringify({ display_text: 'Copy Session', copy_code: shortSession }) },
                             { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Visit Bot Repo', url: BOT_REPO }) },
                             { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Join WaChannel', url: WA_CHANNEL }) }
                         ];
                     } else {
-                        msgText = `*SESSION ID ✅*\n\n${fullSession}`;
+                        msgText = '*SESSION ID \u2705*\n\n' + fullSession;
                         msgButtons = [
                             { name: 'cta_copy', buttonParamsJson: JSON.stringify({ display_text: 'Copy Session', copy_code: fullSession }) },
                             { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Visit Bot Repo', url: BOT_REPO }) },
@@ -148,7 +145,6 @@ router.get('/', async (req, res) => {
                             });
                             sent = true;
                         } catch (e) {
-                            console.error(`[pair:${id}] send attempt ${i + 1} failed:`, e.message);
                             if (i < 4) await delay(3000);
                         }
                     }
@@ -157,7 +153,7 @@ router.get('/', async (req, res) => {
                     try { await Guru.ws.close(); } catch (_) {}
 
                 } catch (e) {
-                    console.error(`[pair:${id}] session processing error:`, e.message);
+                    console.error('[pair:' + id + '] session processing error:', e.message);
                 } finally {
                     clearTimeout(cleanupTimeout);
                     await cleanup();
@@ -170,7 +166,6 @@ router.get('/', async (req, res) => {
                     return;
                 }
                 reconnectCount++;
-                console.log(`[pair:${id}] Reconnect #${reconnectCount} (status ${statusCode})`);
                 await delay(4000);
                 GURU_PAIR_CODE();
             }
@@ -180,13 +175,11 @@ router.get('/', async (req, res) => {
             await delay(1500);
             try {
                 const code = await Guru.requestPairingCode(num);
-                console.log(`[pair:${id}] Code issued: ${code}`);
                 if (!responseSent && !res.headersSent) {
                     res.json({ code, fallback: sessionType === 'short' && !isConfigured() });
                     responseSent = true;
                 }
             } catch (err) {
-                console.error(`[pair:${id}] requestPairingCode error:`, err.message);
                 if (!responseSent && !res.headersSent) {
                     res.status(500).json({ code: 'Failed to generate pairing code' });
                     responseSent = true;
@@ -200,7 +193,6 @@ router.get('/', async (req, res) => {
     try {
         await GURU_PAIR_CODE();
     } catch (err) {
-        console.error(`[pair:${id}] fatal:`, err.message);
         clearTimeout(cleanupTimeout);
         await cleanup();
         if (!responseSent && !res.headersSent) {
