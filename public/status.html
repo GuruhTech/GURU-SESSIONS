@@ -4,123 +4,106 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PANTHERR | Status</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --purple: #7c3aed;
-      --purple-light: #a78bfa;
-      --purple-dim: rgba(124,58,237,0.15);
-      --purple-border: rgba(124,58,237,0.3);
-      --bg: #030305;
-      --surface: rgba(255,255,255,0.035);
-      --surface-hover: rgba(255,255,255,0.06);
-      --text: #f1f0ff;
-      --muted: #7c7a9a;
-      --green: #4ade80;
-      --red: #f87171;
-      --yellow: #facc15;
+      --bg: #020810;
+      --cyan: #00C9FF;
+      --cyan-dim: rgba(0,201,255,0.07);
+      --cyan-border: rgba(0,201,255,0.18);
+      --cyan-glow: rgba(0,201,255,0.35);
+      --teal: #0891B2;
+      --gold: #F59E0B;
+      --gold-dim: rgba(245,158,11,0.10);
+      --gold-border: rgba(245,158,11,0.22);
+      --card: #06101A;
+      --text: #E0F7FF;
+      --muted: rgba(224,247,255,0.38);
+      --green: #34D399;
+      --red: #F87171;
     }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      min-height: 100vh;
-      padding: 2rem 1rem;
+    body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; padding: 2rem 1rem; }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse at 70% 0%, rgba(0,201,255,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse at 5% 100%, rgba(245,158,11,0.05) 0%, transparent 45%);
     }
-    .page { max-width: 720px; margin: 0 auto; }
+    .page { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
 
-    /* Header */
     header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
     .logo {
       width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--purple), #9d50bb);
+      background: linear-gradient(135deg, var(--cyan), var(--teal));
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.2rem; color: #020810; font-weight: 900;
     }
-    header h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.05em; }
-    header h1 span { color: var(--purple-light); }
-    .subtitle { font-size: 0.78rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+    header h1 { font-size: 1.4rem; font-weight: 900; letter-spacing: 0.03em; }
+    header h1 span { background: linear-gradient(135deg, var(--cyan), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { font-size: 0.72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
     .refresh-btn {
       margin-left: auto; padding: 0.45rem 1rem; border-radius: 8px;
-      background: var(--purple-dim); border: 1px solid var(--purple-border);
-      color: var(--purple-light); font-family: 'Outfit', sans-serif;
-      font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+      background: var(--cyan-dim); border: 1px solid var(--cyan-border);
+      color: var(--cyan); font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: background 0.2s;
     }
-    .refresh-btn:hover { background: rgba(124,58,237,0.28); }
+    .refresh-btn:hover { background: rgba(0,201,255,0.14); }
 
-    /* Status badge */
     .status-banner {
       display: flex; align-items: center; gap: 0.75rem;
       padding: 1rem 1.25rem; border-radius: 14px;
-      border: 1px solid var(--purple-border);
-      background: var(--surface);
-      margin-bottom: 1.5rem;
+      border: 1px solid var(--cyan-border);
+      background: var(--cyan-dim); margin-bottom: 1.5rem;
+      position: relative; overflow: hidden;
     }
-    .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
+    .status-banner::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), transparent);
     }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; flex-shrink: 0; }
     .dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); animation: none; }
-    .dot.loading { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
-    .status-label { font-weight: 700; font-size: 1rem; }
-    .status-ts { margin-left: auto; font-size: 0.75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .dot.loading { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .status-label { font-weight: 800; font-size: 1rem; letter-spacing: 0.03em; }
+    .status-ts { margin-left: auto; font-size: 0.72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
 
-    /* Grid */
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
     @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
 
     .card {
-      background: var(--surface);
-      border: 1px solid var(--purple-border);
-      border-radius: 14px;
-      padding: 1.25rem 1.4rem;
+      background: var(--card); border: 1px solid var(--cyan-border);
+      border-radius: 16px; padding: 1.25rem 1.4rem; position: relative; overflow: hidden;
+    }
+    .card::after {
+      content: ''; position: absolute; bottom: 0; right: 0;
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, transparent 50%, rgba(0,201,255,0.06) 50%);
     }
     .card-label {
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
       color: var(--muted); text-transform: uppercase; margin-bottom: 0.6rem;
       font-family: 'JetBrains Mono', monospace;
     }
-    .card-value {
-      font-size: 1.6rem; font-weight: 800; color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .card-value.sm { font-size: 1.1rem; }
-    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+    .card-value { font-size: 1.55rem; font-weight: 900; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+    .card-value.sm { font-size: 1.05rem; }
+    .card-sub { font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; }
 
-    /* Tag */
-    .tag {
-      display: inline-block; padding: 0.2rem 0.65rem;
-      border-radius: 20px; font-size: 0.72rem; font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .tag-green { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
-    .tag-purple { background: var(--purple-dim); color: var(--purple-light); border: 1px solid var(--purple-border); }
-    .tag-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+    .tag { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .tag-green { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+    .tag-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-border); }
+    .tag-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
+    .tag-red { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
 
-    /* Memory bar */
-    .bar-wrap { background: rgba(255,255,255,0.07); border-radius: 6px; height: 6px; margin-top: 0.6rem; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--purple), var(--purple-light)); transition: width 0.5s; }
-
-    /* Full-width card */
+    .bar-wrap { background: rgba(255,255,255,0.06); border-radius: 6px; height: 6px; margin-top: 0.6rem; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--cyan), var(--gold)); transition: width 0.5s; }
     .card-full { grid-column: 1 / -1; }
 
-    /* Error state */
-    .error-box {
-      background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25);
-      border-radius: 14px; padding: 1.25rem 1.4rem;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--red);
-    }
+    .error-box { background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.2); border-radius: 14px; padding: 1.25rem 1.4rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--red); }
 
-    footer { text-align: center; margin-top: 2rem; font-size: 0.72rem; color: var(--muted); }
-    footer a { color: var(--purple-light); text-decoration: none; }
+    footer { text-align: center; margin-top: 2rem; font-size: 0.7rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    footer a { color: var(--cyan); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -141,7 +124,8 @@
   </div>
 
   <div id="content"></div>
-  <footer>PANTHERR Session · <a href="/">Home</a> · <a href="/pair">Pair</a> · <a href="/qr">QR</a></footer>
+
+  <footer>PANTHERR Session &nbsp;·&nbsp; <a href="/">Home</a> &nbsp;·&nbsp; <a href="/pair">Pair</a> &nbsp;·&nbsp; <a href="/qr">QR</a></footer>
 </div>
 
 <script>
@@ -168,21 +152,22 @@ async function load() {
 
     const storageConfigured = d.storage?.configured;
     const storageType = (d.storage?.type || 'unknown').toUpperCase();
+    const envTag = (d.environment || 'local').toUpperCase();
 
     content.innerHTML = `
       <div class="grid">
         <div class="card">
           <div class="card-label">Service</div>
           <div class="card-value sm">${d.service || 'PANTHERR'}</div>
-          <div class="card-sub">
-            <span class="tag tag-purple">${(d.environment || 'local').toUpperCase()}</span>
+          <div class="card-sub" style="margin-top:0.5rem">
+            <span class="tag tag-cyan">${envTag}</span>
           </div>
         </div>
 
         <div class="card">
           <div class="card-label">Storage</div>
           <div class="card-value sm">${storageType}</div>
-          <div class="card-sub" style="margin-top:0.4rem">
+          <div class="card-sub" style="margin-top:0.5rem">
             <span class="tag ${storageConfigured ? 'tag-green' : 'tag-red'}">
               ${storageConfigured ? 'CONNECTED' : 'NOT CONFIGURED'}
             </span>
@@ -205,7 +190,7 @@ async function load() {
           <div class="card-label">Memory Usage</div>
           <div style="display:flex;justify-content:space-between;align-items:baseline">
             <div class="card-value sm">${d.system?.memory?.used_mb ?? '—'} MB used</div>
-            <div class="card-sub">${d.system?.memory?.rss_mb ?? '—'} MB RSS · ${d.system?.memory?.total_mb ?? '—'} MB heap</div>
+            <div class="card-sub">${d.system?.memory?.rss_mb ?? '—'} MB RSS &nbsp;·&nbsp; ${d.system?.memory?.total_mb ?? '—'} MB heap</div>
           </div>
           <div class="bar-wrap"><div class="bar-fill" style="width:${memPct}%"></div></div>
           <div class="card-sub" style="margin-top:0.4rem">${memPct}% heap used</div>
@@ -218,7 +203,6 @@ async function load() {
     content.innerHTML = '<div class="error-box">Failed to reach /health — ' + e.message + '</div>';
   }
 }
-
 load();
 setInterval(load, 30000);
 </script>
