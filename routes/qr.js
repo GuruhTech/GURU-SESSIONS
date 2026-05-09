@@ -11,10 +11,11 @@ const pino = require('pino');
 const {
     default: guruConnect,
     useMultiFileAuthState,
-    Browsers,
     delay,
-    fetchLatestBaileysVersion
-} = require('@whiskeysockets/baileys');
+    fetchLatestBaileysVersion,
+    makeCacheableSignalKeyStore,
+    Browsers
+} = await import('@whiskeysockets/baileys');
 
 let router = express.Router();
 
