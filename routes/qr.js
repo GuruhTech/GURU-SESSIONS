@@ -8,14 +8,6 @@ const zlib = require('zlib');
 const path = require('path');
 const fs = require('fs');
 const pino = require('pino');
-const {
-    default: guruConnect,
-    useMultiFileAuthState,
-    delay,
-    fetchLatestBaileysVersion,
-    makeCacheableSignalKeyStore,
-    Browsers
-} = await import('@whiskeysockets/baileys');
 
 let router = express.Router();
 
@@ -40,6 +32,14 @@ router.get('/session', async (req, res) => {
     const cleanupTimeout = setTimeout(() => cleanup(), 280000);
 
     async function GURU_QR_CODE() {
+        const {
+            default: guruConnect,
+            useMultiFileAuthState,
+            delay,
+            fetchLatestBaileysVersion,
+            Browsers
+        } = await import('@whiskeysockets/baileys');
+
         const { version } = await fetchLatestBaileysVersion();
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
 
@@ -61,31 +61,10 @@ router.get('/session', async (req, res) => {
 
                 if (qr && !responseSent && !res.headersSent) {
                     const qrImage = await QRCode.toDataURL(qr);
-                    res.send(`<!DOCTYPE html>
-<html>
-<head>
-  <title>PANTHERR | QR CODE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    body { display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; background:#000; font-family:Arial,sans-serif; color:#fff; text-align:center; padding:20px; box-sizing:border-box; }
-    .container { width:100%; max-width:600px; }
-    .qr-code { width:300px; height:300px; padding:10px; background:white; border-radius:20px; box-shadow:0 0 30px rgba(255,255,255,0.2); margin:20px auto; display:flex; justify-content:center; align-items:center; }
-    .qr-code img { width:100%; height:100%; }
-    h1 { color:#fff; font-size:28px; font-weight:800; }
-    p { color:#ccc; font-size:16px; }
-    .back-btn { display:inline-block; padding:12px 25px; margin-top:15px; background:linear-gradient(135deg,#6e48aa,#9d50bb); color:white; text-decoration:none; border-radius:30px; font-weight:bold; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    ${sessionType === 'short' && !isConfigured() ? `<div style="margin-bottom:18px;padding:12px 16px;border-radius:12px;border:1px solid rgba(96,165,250,0.3);background:rgba(30,58,138,0.25);display:flex;align-items:flex-start;gap:10px;text-align:left;"><span>ℹ️</span><p style="margin:0;font-size:0.78rem;color:#93c5fd">Session store is not configured &mdash; switched to <strong>Long session</strong>.</p></div>` : ''}
-    <h1>PANTHERR QR CODE</h1>
-    <div class="qr-code"><img src="${qrImage}" alt="QR Code"/></div>
-    <p>Scan this QR code with your phone to connect</p>
-    <a href="./" class="back-btn">Back</a>
-  </div>
-</body>
-</html>`);
+                    const fallbackNotice = (sessionType === 'short' && !isConfigured())
+                        ? '<div style="margin-bottom:18px;padding:12px 16px;border-radius:12px;border:1px solid rgba(96,165,250,0.3);background:rgba(30,58,138,0.25);display:flex;align-items:flex-start;gap:10px;text-align:left;"><span>\u2139\ufe0f</span><p style="margin:0;font-size:0.78rem;color:#93c5fd">Session store is not configured &mdash; switched to <strong>Long session</strong>.</p></div>'
+                        : '';
+                    res.send('<!DOCTYPE html><html><head><title>PANTHERR | QR CODE</title><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#000;font-family:Arial,sans-serif;color:#fff;text-align:center;padding:20px;box-sizing:border-box;}.container{width:100%;max-width:600px;}.qr-code{width:300px;height:300px;padding:10px;background:white;border-radius:20px;box-shadow:0 0 30px rgba(255,255,255,0.2);margin:20px auto;display:flex;justify-content:center;align-items:center;}.qr-code img{width:100%;height:100%;}h1{color:#fff;font-size:28px;font-weight:800;}p{color:#ccc;font-size:16px;}.back-btn{display:inline-block;padding:12px 25px;margin-top:15px;background:linear-gradient(135deg,#6e48aa,#9d50bb);color:white;text-decoration:none;border-radius:30px;font-weight:bold;}</style></head><body><div class="container">' + fallbackNotice + '<h1>PANTHERR QR CODE</h1><div class="qr-code"><img src="' + qrImage + '" alt="QR Code"/></div><p>Scan this QR code with your phone to connect</p><a href="./" class="back-btn">Back</a></div></body></html>');
                     responseSent = true;
                 }
 
@@ -115,15 +94,15 @@ router.get('/session', async (req, res) => {
                         let msgText, msgButtons;
                         if (isConfigured() && sessionType === 'short') {
                             const shortId = await saveSession(fullSession);
-                            const shortSession = `${SESSION_PREFIX}${shortId}`;
-                            msgText = `*SESSION ID ✅*\n\n${shortSession}`;
+                            const shortSession = SESSION_PREFIX + shortId;
+                            msgText = '*SESSION ID \u2705*\n\n' + shortSession;
                             msgButtons = [
                                 { name: 'cta_copy', buttonParamsJson: JSON.stringify({ display_text: 'Copy Session', copy_code: shortSession }) },
                                 { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Visit Bot Repo', url: BOT_REPO }) },
                                 { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Join WaChannel', url: WA_CHANNEL }) }
                             ];
                         } else {
-                            msgText = `*SESSION ID ✅*\n\n${fullSession}`;
+                            msgText = '*SESSION ID \u2705*\n\n' + fullSession;
                             msgButtons = [
                                 { name: 'cta_copy', buttonParamsJson: JSON.stringify({ display_text: 'Copy Session', copy_code: fullSession }) },
                                 { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: 'Visit Bot Repo', url: BOT_REPO }) },
@@ -135,7 +114,7 @@ router.get('/session', async (req, res) => {
                         await delay(2000);
                         try { await Guru.ws.close(); } catch (_) {}
                     } catch (e) {
-                        console.error(`[qr:${id}] session error:`, e.message);
+                        console.error('[qr:' + id + '] session error:', e.message);
                     } finally {
                         clearTimeout(cleanupTimeout);
                         await cleanup();
@@ -147,7 +126,6 @@ router.get('/session', async (req, res) => {
                 }
             });
         } catch (err) {
-            console.error(`[qr:${id}] error:`, err.message);
             if (!responseSent && !res.headersSent) {
                 res.status(500).json({ code: 'QR Service Unavailable' });
                 responseSent = true;
@@ -160,7 +138,6 @@ router.get('/session', async (req, res) => {
     try {
         await GURU_QR_CODE();
     } catch (e) {
-        console.error(`[qr:${id}] fatal:`, e.message);
         clearTimeout(cleanupTimeout);
         await cleanup();
         if (!responseSent && !res.headersSent) {
